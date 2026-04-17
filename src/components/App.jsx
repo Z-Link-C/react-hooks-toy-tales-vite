@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Header from "./Header";
 import ToyForm from "./ToyForm";
@@ -6,7 +6,16 @@ import ToyContainer from "./ToyContainer";
 
 function App() {
   const [showForm, setShowForm] = useState(false);
-
+  const [toys, setToys] = useState([])
+  useEffect(()=>{
+    fetch("http://localhost:3001/toys")
+    .then(data=>{
+      if(!data.ok){throw new Error("failed to get toys")}
+      return data.json()
+    })
+    .then(setToys)
+    .catch(error=>console.log(error.message))
+  },[]);
   function handleClick() {
     setShowForm((showForm) => !showForm);
   }
@@ -18,7 +27,7 @@ function App() {
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
-      <ToyContainer />
+      <ToyContainer toyData={toys}/>
     </>
   );
 }
