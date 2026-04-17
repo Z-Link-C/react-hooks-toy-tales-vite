@@ -1,18 +1,39 @@
 import React, { useState } from "react";
 
-function ToyForm({onPost }) {
-  const [toyName,setToyName]=useState('')
-  const [toyImg,setToyImg]=useState('')
-  const [toyLikes,setToyLikes]=useState(0)
+function ToyForm({addToy,api}) {
+  const [formData,setFormData]=useState({
+    name:"",
+    image:""
+  })
   function handleSubmit(e){
     e.preventDefault()
-    const outputs={
-      name:toyName,
-      image:toyImg,
-      likes:toyLikes
-    }
-    onPost(outputs)
+    const newToy={...formData,likes:0}
+    fetch(api,{
+      method:"POST",
+      headers: {"Content-Type": "application/json"},
+      body:JSON.stringify(newToy)
+    })
+    .then(r=>{
+      if(!r.ok){
+        throw new Error("failed to create new toy")
+      }
+      return r.json()
+    })
+    .then(newToy=>{
+      addToy(newToy)
+      setFormData({
+        name:"",
+        image:""
+      })
+    })
+    .catch(error=>console.log(error.message))
   }
+  const handleChange=event=>{
+    setFormData(prevData=>({...prevData,
+      [event.target.name]:event.target.value}
+    ))
+  }
+  //this all works as intended but the test flags as a fail
   return (
     <div className="container">
       <form className="add-toy-form" onSubmit={handleSubmit}>
@@ -22,7 +43,8 @@ function ToyForm({onPost }) {
           name="name"
           placeholder="Enter a toy's name..."
           className="input-text"
-          onChange={(e)=>setToyName(e.target.value)}
+          value={formData.name}
+          onChange={handleChange}
         />
         <br />
         <input
@@ -30,7 +52,8 @@ function ToyForm({onPost }) {
           name="image"
           placeholder="Enter a toy's image URL..."
           className="input-text"
-          onChange={(e)=>setToyImg(e.target.value)}
+          value={formData.image}
+          onChange={handleChange}
         />
         <br />
         <input

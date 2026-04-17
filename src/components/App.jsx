@@ -12,8 +12,8 @@ function App() {
   useEffect(()=>{
     fetchMain();
   },[]);
-  async function fetchMain(){
-    await fetch(api)
+  function fetchMain(){
+    fetch(api)
     .then(data=>{
       if(!data.ok){throw new Error("failed to get toys")}
       
@@ -25,25 +25,13 @@ function App() {
   function handleClick() {
     setShowForm((showForm) => !showForm);
   }
-  async function handlePost(e){
-    await fetch(api,{
-        method:'POST',
-        body:JSON.stringify({
-          name:e.name,
-          image:e.image,
-          likes:e.likes
-
-        }),
-        headers:{'Content-type': 'application/json'}
-      })
-      .then((resp)=>resp.json())
-    fetchMain()
+  function addToy(newToy){
+    setToys(prevData=>[...prevData,newToy])
   }
-
   return (
     <>
       <Header />
-      {showForm ? <ToyForm onPost={handlePost}/> : null}
+      {showForm ? <ToyForm addToy={addToy} api={api}/> : null}
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
