@@ -25,8 +25,15 @@ function App() {
   function handleClick() {
     setShowForm((showForm) => !showForm);
   }
-  function addToy(newToy){
-    setToys(prevData=>[...prevData,newToy])
+  const addToy = newToy => {
+    setToys( prevData => [ ...prevData, newToy])
+  }
+  const updateToy = updatedToy => {
+    setToys( prevData => prevData.map(
+      toy => toy.id === updatedToy.id ? updatedToy : toy))
+  }
+  const deleteToy = deletedToy => {
+    setToys(prevData => prevData.filter(toy=>toy.id !== deletedToy))
   }
   return (
     <>
@@ -35,7 +42,7 @@ function App() {
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
-      <ToyContainer toyData={toys}/>
+      <ToyContainer toyData={toys} updateToy={updateToy} deleteToy={deleteToy}/>
     </>
   );
 }
